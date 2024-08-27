@@ -102,7 +102,7 @@ variable "gcp_kms_crypto_key" {
 variable "vault_version" {
   type        = string
   description = "(optional) The version of Vault to use"
-  default     = "1.16.0+ent"
+  default     = "1.17.3+ent"
 }
 
 variable "vault_disable_mlock" {

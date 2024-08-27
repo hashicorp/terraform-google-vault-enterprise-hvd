@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 locals {
   vault_seal_attributes = {
     project    = var.gcp_kms_project == null ? var.project_id : var.gcp_kms_project

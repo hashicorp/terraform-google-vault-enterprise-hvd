@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 locals {
   vault_user_data_template = fileexists("${path.cwd}/templates/${var.vault_user_data_template}") ? "${path.cwd}/templates/${var.vault_user_data_template}" : "${path.module}/templates/${var.vault_user_data_template}"
   vault_user_data_template_vars = {

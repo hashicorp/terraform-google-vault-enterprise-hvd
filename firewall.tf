@@ -1,3 +1,6 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
 resource "google_compute_firewall" "allow_iap" {
   count = var.enable_iap == true ? 1 : 0
   #name  = "${var.friendly_name_prefix}-vault-firewall-iap-allow"

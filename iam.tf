@@ -15,7 +15,7 @@ resource "google_project_iam_member" "vault_iam" {
 
   project = var.project_id
   role    = each.value
-  member  = format("serviceAccount:%s", google_service_account.vault_sa.email)
+  member  = google_service_account.vault_sa.member
 }
 
 resource "google_storage_bucket_iam_binding" "snapshots_creator" {
@@ -25,7 +25,7 @@ resource "google_storage_bucket_iam_binding" "snapshots_creator" {
   role   = "roles/storage.objectCreator"
 
   members = [
-    format("serviceAccount:%s", google_service_account.vault_sa.email)
+    google_service_account.vault_sa.member
   ]
 }
 
@@ -36,6 +36,6 @@ resource "google_storage_bucket_iam_binding" "snapshots_viewer" {
   role   = "roles/storage.objectViewer"
 
   members = [
-    format("serviceAccount:%s", google_service_account.vault_sa.email)
+    google_service_account.vault_sa.member
   ]
 }

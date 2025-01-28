@@ -25,7 +25,7 @@ resource "google_project_iam_member" "vault_iam_kms" {
 
   project = var.gcp_kms_project
   role    = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
-  member  = format("serviceAccount:%s", google_service_account.vault_sa.email)
+  member  = google_service_account.vault_sa.member
 }
 
 resource "google_kms_crypto_key_iam_member" "vault_key" {
@@ -33,7 +33,7 @@ resource "google_kms_crypto_key_iam_member" "vault_key" {
 
   crypto_key_id = data.google_kms_crypto_key.vault_key[0].id
   role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
-  member        = "serviceAccount:${google_service_account.vault_sa.email}"
+  member        = google_service_account.vault_sa.member
 }
 resource "google_kms_key_ring_iam_binding" "vault_iam_kms_binding" {
   count       = var.gcp_kms_key_ring == null ? 0 : 1
@@ -42,6 +42,6 @@ resource "google_kms_key_ring_iam_binding" "vault_iam_kms_binding" {
   role = "roles/editor"
 
   members = [
-    "serviceAccount:${google_service_account.vault_sa.email}",
+    google_service_account.vault_sa.member,
   ]
 }

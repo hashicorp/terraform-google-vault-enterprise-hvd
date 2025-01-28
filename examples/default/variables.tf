@@ -422,7 +422,18 @@ variable "google_service_account_iam_roles" {
   default = [
     "roles/compute.viewer",
     "roles/secretmanager.secretAccessor",
-    "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+    "roles/logging.logWriter",
+    "roles/monitoring.metricWriter",
+  ]
+}
+
+variable "vault_kms_custom_role" {
+  description = "(optional) List of permissions for the Vault KMS custom role"
+  type        = list(string)
+  default = [
+    "cloudkms.cryptoKeys.get",
+    "cloudkms.cryptoKeyVersions.useToDecrypt",
+    "cloudkms.cryptoKeyVersions.useToEncrypt",
   ]
 }
 

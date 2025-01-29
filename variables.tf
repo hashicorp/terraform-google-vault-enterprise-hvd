@@ -420,7 +420,6 @@ variable "google_service_account_iam_roles" {
   type        = list(string)
   description = "(optional) List of IAM roles to give to the Vault service account"
   default = [
-    "roles/compute.viewer",
     "roles/secretmanager.secretAccessor",
     "roles/logging.logWriter",
     "roles/monitoring.metricWriter",
@@ -434,6 +433,16 @@ variable "vault_kms_custom_role" {
     "cloudkms.cryptoKeys.get",
     "cloudkms.cryptoKeyVersions.useToDecrypt",
     "cloudkms.cryptoKeyVersions.useToEncrypt",
+  ]
+}
+
+variable "vault_custom_role" {
+  description = "(optional) List of permissions for the Vault custom role"
+  type        = list(string)
+  default = [
+    # Auto join
+    "compute.zones.list",
+    "compute.instances.list",
   ]
 }
 

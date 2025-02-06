@@ -15,7 +15,7 @@ resource "google_project_iam_member" "vault_iam" {
 
   project = var.project_id
   role    = each.value
-  member  = format("serviceAccount:%s", google_service_account.vault_sa.email)
+  member  = google_service_account.vault_sa.member
 }
 
 resource "google_storage_bucket_iam_binding" "snapshots_creator" {
@@ -25,7 +25,7 @@ resource "google_storage_bucket_iam_binding" "snapshots_creator" {
   role   = "roles/storage.objectCreator"
 
   members = [
-    format("serviceAccount:%s", google_service_account.vault_sa.email)
+    google_service_account.vault_sa.member
   ]
 }
 
@@ -36,6 +36,19 @@ resource "google_storage_bucket_iam_binding" "snapshots_viewer" {
   role   = "roles/storage.objectViewer"
 
   members = [
-    format("serviceAccount:%s", google_service_account.vault_sa.email)
+    google_service_account.vault_sa.member
   ]
+}
+
+resource "google_project_iam_custom_role" "vault_custom_role" {
+  role_id     = "vaultCustomRole"
+  title       = "Vault Custom Role"
+  description = "Custom role for Vault to access GCP resources"
+  permissions = var.vault_custom_role
+}
+
+resource "google_project_iam_member" "vault_custom_role" {
+  project = var.project_id
+  role    = google_project_iam_custom_role.vault_custom_role.name
+  member  = google_service_account.vault_sa.member
 }

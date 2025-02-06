@@ -25,23 +25,22 @@ resource "google_project_iam_member" "vault_iam_kms" {
 
   project = var.gcp_kms_project
   role    = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
-  member  = format("serviceAccount:%s", google_service_account.vault_sa.email)
+  member  = google_service_account.vault_sa.member
+}
+
+resource "google_project_iam_custom_role" "vault_kms_custom_role" {
+  count = var.gcp_kms_crypto_key == null ? 0 : 1
+
+  role_id     = "vaultKmsRole"
+  title       = "Vault KMS CryptoKey Encrypter/Decrypter and Viewer Role"
+  description = "Custom role for Vault to access Cloud KMS Key"
+  permissions = var.vault_kms_custom_role
 }
 
 resource "google_kms_crypto_key_iam_member" "vault_key" {
   count = var.gcp_kms_crypto_key == null ? 0 : 1
 
   crypto_key_id = data.google_kms_crypto_key.vault_key[0].id
-  role          = "roles/cloudkms.cryptoKeyEncrypterDecrypter"
-  member        = "serviceAccount:${google_service_account.vault_sa.email}"
-}
-resource "google_kms_key_ring_iam_binding" "vault_iam_kms_binding" {
-  count       = var.gcp_kms_key_ring == null ? 0 : 1
-  key_ring_id = data.google_kms_key_ring.vault[0].id
-  # key_ring_id = "${var.gcloud-project}/${var.keyring_location}/${var.key_ring}"
-  role = "roles/editor"
-
-  members = [
-    "serviceAccount:${google_service_account.vault_sa.email}",
-  ]
+  role          = google_project_iam_custom_role.vault_kms_custom_role[0].name
+  member        = google_service_account.vault_sa.member
 }

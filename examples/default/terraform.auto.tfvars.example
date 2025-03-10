@@ -8,7 +8,6 @@ common_labels           = {}
 compute_image_family    = "ubuntu-2204-lts"
 compute_image_project   = "ubuntu-os-cloud"
 create_cloud_dns_record = false
-debug                   = false
 vault_data_disk_size    = 100
 vault_data_disk_type    = "pd-ssd"
 vault_audit_disk_size   = 100

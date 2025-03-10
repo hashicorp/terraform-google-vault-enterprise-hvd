@@ -139,7 +139,6 @@ See [KMS](./docs/kms.md) docs for helper material on producing the required KMS 
 | <a name="input_compute_image_family"></a> [compute\_image\_family](#input\_compute\_image\_family) | (optional) The family name of the image, https://cloud.google.com/compute/docs/images/os-details,defaults to `Ubuntu` | `string` | `"ubuntu-2204-lts"` | no |
 | <a name="input_compute_image_project"></a> [compute\_image\_project](#input\_compute\_image\_project) | (optional) The project name of the image, https://cloud.google.com/compute/docs/images/os-details, defaults to `Ubuntu` | `string` | `"ubuntu-os-cloud"` | no |
 | <a name="input_create_cloud_dns_record"></a> [create\_cloud\_dns\_record](#input\_create\_cloud\_dns\_record) | Boolean to create Google Cloud DNS record for `vault_fqdn` resolving to load balancer IP. `cloud_dns_managed_zone` is required when `true`. | `bool` | `false` | no |
-| <a name="input_debug"></a> [debug](#input\_debug) | [Optional bool] Enable additional outputs available module outputs for debug purposes. | `bool` | `false` | no |
 | <a name="input_enable_auto_healing"></a> [enable\_auto\_healing](#input\_enable\_auto\_healing) | (optional) Enable auto-healing on the Instance Group | `bool` | `false` | no |
 | <a name="input_enable_iap"></a> [enable\_iap](#input\_enable\_iap) | (Optional bool) Enable https://cloud.google.com/iap/docs/using-tcp-forwarding#console, defaults to `true`. | `bool` | `true` | no |
 | <a name="input_gcp_kms_crypto_key"></a> [gcp\_kms\_crypto\_key](#input\_gcp\_kms\_crypto\_key) | (optional) The name of the KMS crypto key | `string` | `null` | no |
@@ -182,6 +181,7 @@ See [KMS](./docs/kms.md) docs for helper material on producing the required KMS 
 | <a name="input_vault_port_api"></a> [vault\_port\_api](#input\_vault\_port\_api) | TCP port for Vault API listener | `number` | `8200` | no |
 | <a name="input_vault_port_cluster"></a> [vault\_port\_cluster](#input\_vault\_port\_cluster) | TCP port for Vault cluster address | `number` | `8201` | no |
 | <a name="input_vault_seal_type"></a> [vault\_seal\_type](#input\_vault\_seal\_type) | (optional) The seal type to use for Vault | `string` | `"gcpckms"` | no |
+| <a name="input_vault_telemetry_config"></a> [vault\_telemetry\_config](#input\_vault\_telemetry\_config) | Enable telemetry for Vault | `map(string)` | `null` | no |
 | <a name="input_vault_tls_disable_client_certs"></a> [vault\_tls\_disable\_client\_certs](#input\_vault\_tls\_disable\_client\_certs) | Disable client authentication for the Vault listener. Must be enabled when tls auth method is used. | `bool` | `true` | no |
 | <a name="input_vault_tls_require_and_verify_client_cert"></a> [vault\_tls\_require\_and\_verify\_client\_cert](#input\_vault\_tls\_require\_and\_verify\_client\_cert) | (optional) Require a client to present a client certificate that validates against system CAs | `bool` | `false` | no |
 | <a name="input_vault_user_data_template"></a> [vault\_user\_data\_template](#input\_vault\_user\_data\_template) | (optional) Alternative template file to provide for instance template metadata script. place the file in your local `./templates folder` no path required | `string` | `"google_vault_metadata.sh.tpl"` | no |
@@ -193,7 +193,6 @@ See [KMS](./docs/kms.md) docs for helper material on producing the required KMS 
 | Name | Description |
 |------|-------------|
 | <a name="output_loadbalancer_ip"></a> [loadbalancer\_ip](#output\_loadbalancer\_ip) | The external ip address of the forwarding rule. |
-| <a name="output_user_data_template"></a> [user\_data\_template](#output\_user\_data\_template) | n/a |
 | <a name="output_vault_cli_config"></a> [vault\_cli\_config](#output\_vault\_cli\_config) | Environment variables to configure the Vault CLI |
 | <a name="output_zones"></a> [zones](#output\_zones) | n/a |
 <!-- END_TF_DOCS -->

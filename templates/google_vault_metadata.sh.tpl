@@ -13,6 +13,9 @@ VAULT_DIR_BIN="${vault_dir_bin}"
 VAULT_USER="${vault_user_name}"
 VAULT_GROUP="${vault_group_name}"
 VAULT_INSTALL_URL="${vault_install_url}"
+PRODUCT="vault"
+VAULT_VERSION="${vault_version}"
+VERSION=$VAULT_VERSION
 REQUIRED_PACKAGES="unzip"
 ADDITIONAL_PACKAGES="${additional_package_names}"
 
@@ -46,6 +49,70 @@ function determine_os_distro {
   echo "$os_distro"
 }
 
+function detect_architecture {
+  local ARCHITECTURE=""
+  local OS_ARCH_DETECTED=$(uname -m)
+
+  case "$OS_ARCH_DETECTED" in
+    "x86_64"*)
+      ARCHITECTURE="linux_amd64"
+      ;;
+    "aarch64"*)
+      ARCHITECTURE="linux_arm64"
+      ;;
+		"arm"*)
+      ARCHITECTURE="linux_arm"
+			;;
+    *)
+      log "ERROR" "Unsupported architecture detected: '$OS_ARCH_DETECTED'. "
+		  exit_script 1
+  esac
+
+  echo "$ARCHITECTURE"
+
+}
+
+function checksum_verify {
+  local OS_ARCH="$1"
+
+  # https://www.hashicorp.com/en/trust/security
+  # checksum_verify downloads the $$PRODUCT binary and verifies its integrity
+  log "INFO" "Verifying the integrity of the $${PRODUCT} binary."
+  export GNUPGHOME=./.gnupg
+  log "INFO" "Importing HashiCorp GPG key."
+  sudo curl -s https://www.hashicorp.com/.well-known/pgp-key.txt | gpg --import
+
+	log "INFO" "Downloading $${PRODUCT} binary"
+  sudo curl -Os https://releases.hashicorp.com/"$${PRODUCT}"/"$${VERSION}"/"$${PRODUCT}"_"$${VERSION}"_"$${OS_ARCH}".zip
+	log "INFO" "Downloading Vault Enterprise binary checksum files"
+  sudo curl -Os https://releases.hashicorp.com/"$${PRODUCT}"/"$${VERSION}"/"$${PRODUCT}"_"$${VERSION}"_SHA256SUMS
+	log "INFO" "Downloading Vault Enterprise binary checksum signature file"
+  sudo curl -Os https://releases.hashicorp.com/"$${PRODUCT}"/"$${VERSION}"/"$${PRODUCT}"_"$${VERSION}"_SHA256SUMS.sig
+  log "INFO" "Verifying the signature file is untampered."
+  gpg --verify "$${PRODUCT}"_"$${VERSION}"_SHA256SUMS.sig "$${PRODUCT}"_"$${VERSION}"_SHA256SUMS
+	if [[ $? -ne 0 ]]; then
+		log "ERROR" "Gpg verification failed for SHA256SUMS."
+		exit_script 1
+	fi
+  if [ -x "$(command -v sha256sum)" ]; then
+		log "INFO" "Using sha256sum to verify the checksum of the $${PRODUCT} binary."
+		sha256sum -c "$${PRODUCT}"_"$${VERSION}"_SHA256SUMS --ignore-missing
+	else
+		log "INFO" "Using shasum to verify the checksum of the $${PRODUCT} binary."
+		shasum -a 256 -c "$${PRODUCT}"_"$${VERSION}"_SHA256SUMS --ignore-missing
+	fi
+	if [[ $? -ne 0 ]]; then
+		log "ERROR" "Checksum verification failed for the $${PRODUCT} binary."
+		exit_script 1
+	fi
+
+	log "INFO" "Checksum verification passed for the $${PRODUCT} binary."
+
+	log "INFO" "Removing the downloaded files to clean up"
+	sudo rm -f "$${PRODUCT}"_"$${VERSION}"_SHA256SUMS "$${PRODUCT}"_"$${VERSION}"_SHA256SUMS.sig
+
+}
+
 # https://cloud.google.com/sdk/docs/install-sdk#linux
 function install_gcloud_sdk () {
   if [[ -n "$(command -v gcloud)" ]]; then
@@ -72,9 +139,16 @@ function prepare_disk() {
 
   local device_label="$3"
   log "DEBUG" "prepare_disk - device_label; $${device_label}"
+  sleep 20
 
-  local device_id=$(readlink -f /dev/disk/by-id/$${device_name})
-  log "DEBUG" "prepare_disk - device_id; $${device_id}"
+	local device_id=$(readlink -f /dev/disk/by-id/$${device_name})
+
+	if [[ -z "$${device_id}" ]]; then
+    log "ERROR" "No disk device found attached to device $${device_name}"
+    exit_script 1
+  fi
+
+	log "DEBUG" "prepare_disk - device_id; $${device_id}"
 
   mkdir $device_mountpoint
 
@@ -131,16 +205,37 @@ function directory_create {
 }
 
 # install_vault_binary downloads the Vault binary and puts it in dedicated bin directory
+# function install_vault_binary {
+#   log "INFO" "Downloading Vault Enterprise binary"
+#   sudo curl -so $VAULT_DIR_BIN/vault.zip $VAULT_INSTALL_URL
+
+#   log "INFO" "Unzipping Vault Enterprise binary to $VAULT_DIR_BIN"
+#   sudo unzip $VAULT_DIR_BIN/vault.zip vault -d $VAULT_DIR_BIN
+#   sudo unzip $VAULT_DIR_BIN/vault.zip -x vault -d $VAULT_DIR_LICENSE
+
+#   sudo rm $VAULT_DIR_BIN/vault.zip
+# }
+
+# install_vault_binary downloads the Vault binary and puts it in dedicated bin directory
 function install_vault_binary {
-  log "INFO" "Downloading Vault Enterprise binary"
-  sudo curl -so $VAULT_DIR_BIN/vault.zip $VAULT_INSTALL_URL
+  local OS_ARCH="$1"
+	#VAULT_INSTALL_URL="https://releases.hashicorp.com/$${PRODUCT}/$${VAULT_VERSION}/$${PRODUCT}_$${VAULT_VERSION}_$${OS_ARCH}.zip"
+  #sudo curl -so $VAULT_DIR_BIN/vault.zip $VAULT_INSTALL_URL
+  log "INFO" "Deploying Vault Enterprise binary to $VAULT_DIR_BIN unzip and set permissions"
+	sudo unzip "$${PRODUCT}"_"$${VAULT_VERSION}"_"$${OS_ARCH}".zip  vault -d $VAULT_DIR_BIN
+	sudo unzip "$${PRODUCT}"_"$${VAULT_VERSION}"_"$${OS_ARCH}".zip -x vault -d $VAULT_DIR_LICENSE
+	sudo rm -f "$${PRODUCT}"_"$${VAULT_VERSION}"_"$${OS_ARCH}".zip
 
-  log "INFO" "Unzipping Vault Enterprise binary to $VAULT_DIR_BIN"
-  sudo unzip $VAULT_DIR_BIN/vault.zip vault -d $VAULT_DIR_BIN
-  sudo unzip $VAULT_DIR_BIN/vault.zip -x vault -d $VAULT_DIR_LICENSE
+	# Set the permissions for the Vault binary
+	sudo chmod 0755 $VAULT_DIR_BIN/vault
+	sudo chown $VAULT_USER:$VAULT_GROUP $VAULT_DIR_BIN/vault
 
-  sudo rm $VAULT_DIR_BIN/vault.zip
+	# Create a symlink to the Vault binary in /usr/local/bin
+	sudo ln -sf $VAULT_DIR_BIN/vault /usr/local/bin/vault
+
+	log "INFO" "Vault binary installed successfully at $VAULT_DIR_BIN/vault"
 }
+
 
 function install_vault_plugins {
   %{ for p in vault_plugin_urls ~}
@@ -345,7 +440,10 @@ exit_script() {
 main() {
   log "INFO" "Beginning custom_data script."
   OS_DISTRO=$(determine_os_distro)
+
   log "INFO" "Detected OS distro is '$OS_DISTRO'."
+	OS_ARCH=$(detect_architecture)
+	log "INFO" "Detected system architecture is '$OS_ARCH'."
 
   log "INFO" "Scraping VM metadata required for Vault configuration"
   scrape_vm_info
@@ -368,8 +466,13 @@ main() {
   log "INFO" "Creating directories for Vault config and data"
   directory_create
 
+	checksum_verify $OS_ARCH
+	log "INFO" "Checksum verification completed for Vault binary."
+
   log "INFO" "Installing Vault"
-  install_vault_binary
+  install_vault_binary $OS_ARCH
+  # log "INFO" "Installing Vault"
+  # install_vault_binary
 
   log "INFO" "Installing Vault plugins"
   install_vault_plugins

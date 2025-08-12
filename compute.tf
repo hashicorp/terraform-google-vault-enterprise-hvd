@@ -38,6 +38,7 @@ locals {
     vault_plugin_urls                        = var.vault_plugin_urls
     auto_join_tag_value                      = var.auto_join_tag == null ? var.tags[0] : var.auto_join_tag[0]
     auto_join_zone_pattern                   = "${var.region}-[[:alpha:]]{1}"
+    vault_raft_performance_multiplier        = var.vault_raft_performance_multiplier
   }
 }
 

@@ -76,7 +76,7 @@ See [KMS](./docs/kms.md) docs for helper material on producing the required KMS 
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.10 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9 |
 | <a name="requirement_google"></a> [google](#requirement\_google) | ~> 5.0 |
 
 ## Providers

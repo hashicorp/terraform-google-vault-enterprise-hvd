@@ -242,6 +242,22 @@ variable "vault_plugin_urls" {
   # }
 }
 
+variable "vault_raft_performance_multiplier" {
+  description = "Raft performance multiplier value. Defaults to 5, which is the default Vault value."
+  type        = number
+  default     = 5
+
+  validation {
+    condition     = var.vault_raft_performance_multiplier >= 1 && var.vault_raft_performance_multiplier <= 10
+    error_message = "Raft performance multiplier must be an integer between 1 and 10."
+  }
+
+  validation {
+    condition     = var.vault_raft_performance_multiplier == floor(var.vault_raft_performance_multiplier)
+    error_message = "Raft performance multiplier must be an integer."
+  }
+}
+
 #-----------------------------------------------------------------------------------
 # Networking
 #-----------------------------------------------------------------------------------
@@ -304,8 +320,8 @@ variable "vault_user_data_template" {
   description = "(optional) Alternative template file to provide for instance template metadata script. place the file in your local `./templates folder` no path required"
   default     = "google_vault_metadata.sh.tpl"
   validation {
-    condition     = can(fileexists("../../templates/${var.vault_user_data_template}") || fileexists("./templates/${var.vault_user_data_template}"))
-    error_message = "File `../../templates/${var.vault_user_data_template}` or `./templates/${var.vault_user_data_template} not found or not readable"
+    condition     = can(fileexists("${path.cwd}/templates/${var.vault_user_data_template}") || fileexists("${path.module}/templates/${var.vault_user_data_template}"))
+    error_message = "File `${path.cwd}/templates/${var.vault_user_data_template}` or `${path.module}/templates/${var.vault_user_data_template} not found or not readable"
   }
 }
 

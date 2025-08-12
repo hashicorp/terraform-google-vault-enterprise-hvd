@@ -304,8 +304,8 @@ variable "vault_user_data_template" {
   description = "(optional) Alternative template file to provide for instance template metadata script. place the file in your local `./templates folder` no path required"
   default     = "google_vault_metadata.sh.tpl"
   validation {
-    condition     = can(fileexists("../../templates/${var.vault_user_data_template}") || fileexists("./templates/${var.vault_user_data_template}"))
-    error_message = "File `../../templates/${var.vault_user_data_template}` or `./templates/${var.vault_user_data_template} not found or not readable"
+    condition     = can(fileexists("${path.cwd}/templates/${var.vault_user_data_template}") || fileexists("${path.module}/templates/${var.vault_user_data_template}"))
+    error_message = "File `${path.cwd}/templates/${var.vault_user_data_template}` or `${path.module}/templates/${var.vault_user_data_template} not found or not readable"
   }
 }
 

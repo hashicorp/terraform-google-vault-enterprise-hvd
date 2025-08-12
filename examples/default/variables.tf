@@ -1,14 +1,6 @@
 # Copyright (c) HashiCorp, Inc.
 # SPDX-License-Identifier: MPL-2.0
 
-#-----------------------------------------------------------------------------------
-# Debug
-#-----------------------------------------------------------------------------------
-variable "debug" {
-  type        = bool
-  description = "[Optional bool] Enable additional outputs available module outputs for debug purposes."
-  default     = false
-}
 
 #-----------------------------------------------------------------------------------
 # Common
@@ -150,7 +142,16 @@ variable "vault_port_cluster" {
   description = "TCP port for Vault cluster address"
   default     = 8201
 }
+variable "vault_telemetry_config" {
+  type        = map(string)
+  description = "Enable telemetry for Vault"
+  default     = null
 
+  validation {
+    condition     = var.vault_telemetry_config == null || can(tomap(var.vault_telemetry_config))
+    error_message = "Telemetry config must be provided as a map of key-value pairs."
+  }
+}
 variable "vault_tls_disable_client_certs" {
   type        = bool
   description = "Disable client authentication for the Vault listener. Must be enabled when tls auth method is used."
@@ -420,9 +421,29 @@ variable "google_service_account_iam_roles" {
   type        = list(string)
   description = "(optional) List of IAM roles to give to the Vault service account"
   default = [
-    "roles/compute.viewer",
     "roles/secretmanager.secretAccessor",
-    "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+    "roles/logging.logWriter",
+    "roles/monitoring.metricWriter",
+  ]
+}
+
+variable "vault_kms_custom_role" {
+  description = "(optional) List of permissions for the Vault KMS custom role"
+  type        = list(string)
+  default = [
+    "cloudkms.cryptoKeys.get",
+    "cloudkms.cryptoKeyVersions.useToDecrypt",
+    "cloudkms.cryptoKeyVersions.useToEncrypt",
+  ]
+}
+
+variable "vault_custom_role" {
+  description = "(optional) List of permissions for the Vault custom role"
+  type        = list(string)
+  default = [
+    # Auto join
+    "compute.zones.list",
+    "compute.instances.list",
   ]
 }
 
@@ -477,3 +498,4 @@ variable "health_timeout" {
   description = "(optional) How long, in seconds, to wait before claiming failure"
   default     = 15
 }
+

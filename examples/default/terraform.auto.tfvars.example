@@ -8,43 +8,40 @@ common_labels           = {}
 compute_image_family    = "ubuntu-2204-lts"
 compute_image_project   = "ubuntu-os-cloud"
 create_cloud_dns_record = false
-debug                   = false
-disk_size               = 100
-disk_type               = "pd-ssd"
+vault_data_disk_size    = 100
+vault_data_disk_type    = "pd-ssd"
+vault_audit_disk_size   = 100
+vault_audit_disk_type   = "pd-ssd"
 enable_auto_healing     = false
 enable_iap              = true
 gcp_kms_crypto_key      = ""
 gcp_kms_key_ring        = ""
 gcp_kms_project         = ""
 gcp_kms_region          = ""
+vault_snapshot_gcs_bucket_name = null
 google_service_account_iam_roles = [
   "roles/compute.viewer",
   "roles/secretmanager.secretAccessor",
-  "roles/cloudkms.cryptoKeyEncrypterDecrypter"
+  "roles/logging.logWriter",
+  "roles/monitoring.metricWriter"
 ]
 health_check_interval      = 30
 health_timeout             = 15
 initial_auto_healing_delay = 1200
 load_balancing_scheme      = "INTERNAL"
 machine_type               = "e2-standard-2"
-metadata                   = ""
+metadata                   = { app = "vault" }
 network                    = "default"
 network_project_id         = ""
 network_region             = ""
 node_count                 = 6
 project_id                 = ""
 region                     = "us-central1"
-skip_install_tools         = false
 subnetwork                 = "default"
 tags = [
   "vault"
 ]
-vault_api_port         = "8200"
-vault_backend_storage  = "integrated"
-vault_bin_directory    = "/usr/bin"
-vault_ca_bundle_secret = ""
-vault_cluster_port     = "8201"
-vault_data_directory   = "/opt/vault"
+
 vault_disable_mlock    = true
 vault_enable_ui        = true
 vault_health_endpoints = {
@@ -57,15 +54,15 @@ vault_health_endpoints = {
   "standbyok": "true",
   "uninitcode": "501"
 }
-vault_home_directory                     = "/etc/vault.d"
-vault_leader_tls_servername              = ""
-vault_license_secret                     = ""
+
 vault_plugin_urls                        = []
-vault_private_key_secret                 = ""
 vault_seal_type                          = "shamir"
-vault_signed_cert_secret                 = ""
-vault_systemd_directory                  = "/lib/systemd/system"
 vault_tls_disable_client_certs           = true
 vault_tls_require_and_verify_client_cert = false
 vault_user_data_template                 = "google_vault_metadata.sh.tpl"
-vault_version                            = "1.16.0+ent"
+vault_version                            = "1.18.3+ent"
+
+vault_license_sm_secret_name       = "vault-license"
+vault_tls_cert_sm_secret_name      = "vault-cert-file"
+vault_tls_privkey_sm_secret_name   = "vault-key-file"
+vault_tls_ca_bundle_sm_secret_name = "vault-ca-file"

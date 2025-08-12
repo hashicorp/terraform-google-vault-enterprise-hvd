@@ -105,6 +105,9 @@ Please note that there is no official Service Level Agreement (SLA) for support 
 | [google_dns_record_set.vault](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/dns_record_set) | resource |
 | [google_kms_crypto_key_iam_member.vault_key](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/kms_crypto_key_iam_member) | resource |
 | [google_kms_key_ring_iam_binding.vault_iam_kms_binding](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/kms_key_ring_iam_binding) | resource |
+| [google_project_iam_custom_role.vault_custom_role](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/project_iam_custom_role) | resource |
+| [google_project_iam_custom_role.vault_kms_custom_role](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/project_iam_custom_role) | resource |
+| [google_project_iam_member.vault_custom_role](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/project_iam_member) | resource |
 | [google_project_iam_member.vault_iam](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/project_iam_member) | resource |
 | [google_project_iam_member.vault_iam_kms](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/project_iam_member) | resource |
 | [google_service_account.vault_sa](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/service_account) | resource |
@@ -124,6 +127,13 @@ Please note that there is no official Service Level Agreement (SLA) for support 
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_project_id"></a> [project\_id](#input\_project\_id) | (required) The project ID to host the cluster in (required) | `string` | n/a | yes |
+| <a name="input_vault_fqdn"></a> [vault\_fqdn](#input\_vault\_fqdn) | Fully qualified domain name to use for joining peer nodes and optionally DNS | `string` | n/a | yes |
+| <a name="input_vault_license_sm_secret_name"></a> [vault\_license\_sm\_secret\_name](#input\_vault\_license\_sm\_secret\_name) | Name of Secret Manager secret containing Vault license. | `string` | n/a | yes |
+| <a name="input_vault_snapshot_gcs_bucket_name"></a> [vault\_snapshot\_gcs\_bucket\_name](#input\_vault\_snapshot\_gcs\_bucket\_name) | Name of Google Cloud Storage bucket to hold Vault snapshots | `string` | n/a | yes |
+| <a name="input_vault_tls_ca_bundle_sm_secret_name"></a> [vault\_tls\_ca\_bundle\_sm\_secret\_name](#input\_vault\_tls\_ca\_bundle\_sm\_secret\_name) | Name of Secret Manager containing Vault TLS custom CA bundle. | `string` | n/a | yes |
+| <a name="input_vault_tls_cert_sm_secret_name"></a> [vault\_tls\_cert\_sm\_secret\_name](#input\_vault\_tls\_cert\_sm\_secret\_name) | Name of Secret Manager containing Vault TLS certificate. | `string` | n/a | yes |
+| <a name="input_vault_tls_privkey_sm_secret_name"></a> [vault\_tls\_privkey\_sm\_secret\_name](#input\_vault\_tls\_privkey\_sm\_secret\_name) | Name of Secret Manager containing Vault TLS private key. | `string` | n/a | yes |
 | <a name="input_additional_package_names"></a> [additional\_package\_names](#input\_additional\_package\_names) | List of additional repository package names to install | `set(string)` | `[]` | no |
 | <a name="input_application_prefix"></a> [application\_prefix](#input\_application\_prefix) | (optional) The prefix to give to cloud entities | `string` | `"vault"` | no |
 | <a name="input_auto_join_tag"></a> [auto\_join\_tag](#input\_auto\_join\_tag) | (optional) A list of a tag which will be used by Vault to join other nodes to the cluster. If left blank, the module will use the first entry in `tags` | `list(string)` | `null` | no |
@@ -135,7 +145,6 @@ Please note that there is no official Service Level Agreement (SLA) for support 
 | <a name="input_compute_image_family"></a> [compute\_image\_family](#input\_compute\_image\_family) | (optional) The family name of the image, https://cloud.google.com/compute/docs/images/os-details,defaults to `Ubuntu` | `string` | `"ubuntu-2204-lts"` | no |
 | <a name="input_compute_image_project"></a> [compute\_image\_project](#input\_compute\_image\_project) | (optional) The project name of the image, https://cloud.google.com/compute/docs/images/os-details, defaults to `Ubuntu` | `string` | `"ubuntu-os-cloud"` | no |
 | <a name="input_create_cloud_dns_record"></a> [create\_cloud\_dns\_record](#input\_create\_cloud\_dns\_record) | Boolean to create Google Cloud DNS record for `vault_fqdn` resolving to load balancer IP. `cloud_dns_managed_zone` is required when `true`. | `bool` | `false` | no |
-| <a name="input_debug"></a> [debug](#input\_debug) | [Optional bool] Enable additional outputs available module outputs for debug purposes. | `bool` | `false` | no |
 | <a name="input_enable_auto_healing"></a> [enable\_auto\_healing](#input\_enable\_auto\_healing) | (optional) Enable auto-healing on the Instance Group | `bool` | `false` | no |
 | <a name="input_enable_iap"></a> [enable\_iap](#input\_enable\_iap) | (Optional bool) Enable https://cloud.google.com/iap/docs/using-tcp-forwarding#console, defaults to `true`. | `bool` | `true` | no |
 | <a name="input_gcp_kms_crypto_key"></a> [gcp\_kms\_crypto\_key](#input\_gcp\_kms\_crypto\_key) | (optional) The name of the KMS crypto key | `string` | `null` | no |
@@ -143,6 +152,7 @@ Please note that there is no official Service Level Agreement (SLA) for support 
 | <a name="input_gcp_kms_project"></a> [gcp\_kms\_project](#input\_gcp\_kms\_project) | (optional) The project the KMS key ring is in. Can be left blank if project is the same as provider | `string` | `null` | no |
 | <a name="input_gcp_kms_region"></a> [gcp\_kms\_region](#input\_gcp\_kms\_region) | (optional) The region the KMS key ring is in. Can be left blank if region is the same as main region | `string` | `null` | no |
 | <a name="input_google_service_account_iam_roles"></a> [google\_service\_account\_iam\_roles](#input\_google\_service\_account\_iam\_roles) | (optional) List of IAM roles to give to the Vault service account | `list(string)` | <pre>[<br/>  "roles/compute.viewer",<br/>  "roles/secretmanager.secretAccessor",<br/>  "roles/cloudkms.cryptoKeyEncrypterDecrypter"<br/>]</pre> | no |
+| <a name="input_google_service_account_iam_roles"></a> [google\_service\_account\_iam\_roles](#input\_google\_service\_account\_iam\_roles) | (optional) List of IAM roles to give to the Vault service account | `list(string)` | <pre>[<br/>  "roles/secretmanager.secretAccessor",<br/>  "roles/logging.logWriter",<br/>  "roles/monitoring.metricWriter"<br/>]</pre> | no |
 | <a name="input_health_check_interval"></a> [health\_check\_interval](#input\_health\_check\_interval) | (optional) How often, in seconds, to send a health check | `number` | `30` | no |
 | <a name="input_health_timeout"></a> [health\_timeout](#input\_health\_timeout) | (optional) How long, in seconds, to wait before claiming failure | `number` | `15` | no |
 | <a name="input_initial_auto_healing_delay"></a> [initial\_auto\_healing\_delay](#input\_initial\_auto\_healing\_delay) | (optional) The time, in seconds, that the managed instance group waits before it applies autohealing policies | `number` | `1200` | no |
@@ -154,13 +164,13 @@ Please note that there is no official Service Level Agreement (SLA) for support 
 | <a name="input_network_region"></a> [network\_region](#input\_network\_region) | (optional) The region that the VPC network lives in. Can be left blank if network is in the same region as provider | `string` | `null` | no |
 | <a name="input_node_count"></a> [node\_count](#input\_node\_count) | (optional) The number of nodes to create in the pool | `number` | `6` | no |
 | <a name="input_packer_image"></a> [packer\_image](#input\_packer\_image) | (optional) The packer image to use | `string` | `null` | no |
-| <a name="input_project_id"></a> [project\_id](#input\_project\_id) | (required) The project ID to host the cluster in (required) | `string` | n/a | yes |
 | <a name="input_region"></a> [region](#input\_region) | (optional) The region to host the cluster in | `string` | `"us-central1"` | no |
 | <a name="input_subnetwork"></a> [subnetwork](#input\_subnetwork) | (optional) The subnet in the VPC network to host the cluster in | `string` | `"default"` | no |
 | <a name="input_systemd_dir"></a> [systemd\_dir](#input\_systemd\_dir) | Path to systemd directory for unit files | `string` | `"/lib/systemd/system"` | no |
 | <a name="input_tags"></a> [tags](#input\_tags) | (optional) A list containing tags to assign to all resources | `list(string)` | <pre>[<br/>  "vault"<br/>]</pre> | no |
 | <a name="input_vault_audit_disk_size"></a> [vault\_audit\_disk\_size](#input\_vault\_audit\_disk\_size) | (optional) The disk size (GB) to use to create the Vault audit log disk | `number` | `50` | no |
 | <a name="input_vault_audit_disk_type"></a> [vault\_audit\_disk\_type](#input\_vault\_audit\_disk\_type) | (optional) The disk type to use to create the Vault audit log disk | `string` | `"pd-balanced"` | no |
+| <a name="input_vault_custom_role"></a> [vault\_custom\_role](#input\_vault\_custom\_role) | (optional) List of permissions for the Vault custom role | `list(string)` | <pre>[<br/>  "compute.zones.list",<br/>  "compute.instances.list"<br/>]</pre> | no |
 | <a name="input_vault_data_disk_size"></a> [vault\_data\_disk\_size](#input\_vault\_data\_disk\_size) | (optional) The disk size (GB) to use to create the Vault data disk | `number` | `100` | no |
 | <a name="input_vault_data_disk_type"></a> [vault\_data\_disk\_type](#input\_vault\_data\_disk\_type) | (optional) The disk type to use to create the Vault data disk | `string` | `"pd-ssd"` | no |
 | <a name="input_vault_default_lease_ttl_duration"></a> [vault\_default\_lease\_ttl\_duration](#input\_vault\_default\_lease\_ttl\_duration) | The default lease TTL expressed as a time duration in hours, minutes and/or seconds (e.g. `4h30m10s`) | `string` | `"1h"` | no |
@@ -179,11 +189,8 @@ Please note that there is no official Service Level Agreement (SLA) for support 
 | <a name="input_vault_port_api"></a> [vault\_port\_api](#input\_vault\_port\_api) | TCP port for Vault API listener | `number` | `8200` | no |
 | <a name="input_vault_port_cluster"></a> [vault\_port\_cluster](#input\_vault\_port\_cluster) | TCP port for Vault cluster address | `number` | `8201` | no |
 | <a name="input_vault_seal_type"></a> [vault\_seal\_type](#input\_vault\_seal\_type) | (optional) The seal type to use for Vault | `string` | `"gcpckms"` | no |
-| <a name="input_vault_snapshot_gcs_bucket_name"></a> [vault\_snapshot\_gcs\_bucket\_name](#input\_vault\_snapshot\_gcs\_bucket\_name) | Name of Google Cloud Storage bucket to hold Vault snapshots | `string` | n/a | yes |
-| <a name="input_vault_tls_ca_bundle_sm_secret_name"></a> [vault\_tls\_ca\_bundle\_sm\_secret\_name](#input\_vault\_tls\_ca\_bundle\_sm\_secret\_name) | Name of Secret Manager containing Vault TLS custom CA bundle. | `string` | n/a | yes |
-| <a name="input_vault_tls_cert_sm_secret_name"></a> [vault\_tls\_cert\_sm\_secret\_name](#input\_vault\_tls\_cert\_sm\_secret\_name) | Name of Secret Manager containing Vault TLS certificate. | `string` | n/a | yes |
+| <a name="input_vault_telemetry_config"></a> [vault\_telemetry\_config](#input\_vault\_telemetry\_config) | Enable telemetry for Vault | `map(string)` | `null` | no |
 | <a name="input_vault_tls_disable_client_certs"></a> [vault\_tls\_disable\_client\_certs](#input\_vault\_tls\_disable\_client\_certs) | Disable client authentication for the Vault listener. Must be enabled when tls auth method is used. | `bool` | `true` | no |
-| <a name="input_vault_tls_privkey_sm_secret_name"></a> [vault\_tls\_privkey\_sm\_secret\_name](#input\_vault\_tls\_privkey\_sm\_secret\_name) | Name of Secret Manager containing Vault TLS private key. | `string` | n/a | yes |
 | <a name="input_vault_tls_require_and_verify_client_cert"></a> [vault\_tls\_require\_and\_verify\_client\_cert](#input\_vault\_tls\_require\_and\_verify\_client\_cert) | (optional) Require a client to present a client certificate that validates against system CAs | `bool` | `false` | no |
 | <a name="input_vault_user_data_template"></a> [vault\_user\_data\_template](#input\_vault\_user\_data\_template) | (optional) Alternative template file to provide for instance template metadata script. place the file in your local `./templates folder` no path required | `string` | `"google_vault_metadata.sh.tpl"` | no |
 | <a name="input_vault_user_name"></a> [vault\_user\_name](#input\_vault\_user\_name) | Name of system user to own Vault files and processes | `string` | `"vault"` | no |

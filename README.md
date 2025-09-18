@@ -33,7 +33,7 @@ Upon first deployment, Vault servers will auto-join and form a fresh cluster. Th
 
 ## Examples
 
-Example deployment scenarios can be found in the `examples` directory of this repo [here](examples/README.md). These examples cover multiple capabilities of the module and are meant to serve as a starting point for operators.
+Example deployment scenarios can be found in the `examples` directory of this repo [here](https://github.com/hashicorp/terraform-google-vault-enterprise-hvd/tree/main/examples/README.md). These examples cover multiple capabilities of the module and are meant to serve as a starting point for operators.
 
 ## Deployment Options
 
@@ -42,11 +42,11 @@ This module by default deploys on `ubuntu-os-cloud` this can be changed by updat
 - `var.compute_image_family`
 - `var.compute_image_project`
 
-or by creating  packer image and providing the `var.packer_image` see the [Packer](./docs/packer.md) for additional detail.
+or by creating  packer image and providing the `var.packer_image` see the [Packer](https://github.com/hashicorp/terraform-google-vault-enterprise-hvd/tree/main/docs/packer.md) for additional detail.
 
 ## TLS
 
-There is a helper doc for tls cert generation should you need it [TLS](./docs/tls.md).
+There is a helper doc for tls cert generation should you need it [TLS](https://github.com/hashicorp/terraform-google-vault-enterprise-hvd/tree/main/docs/tls.md).
 
 ## Load Balancing
 
@@ -65,13 +65,18 @@ This module supports both the Shamir and Auto Unseal (via Google Cloud KMS) seal
 - `gcp_kms_key_ring` - The name of the cryptographic key ring to use
 - `gcp_kms_crypto_key` - The name of the cryptographic key to use
 
-See [KMS](./docs/kms.md) docs for helper material on producing the required KMS inputs.
-
-## Terraform configuration
-
-[![Terraform Module Test](https://github.com/hashicorp-services/terraform-google-vault-enterprise/actions/workflows/terraform.yml/badge.svg)](https://github.com/hashicorp-services/terraform-google-vault-enterprise/actions/workflows/terraform.yml)
+See [KMS](https://github.com/hashicorp/terraform-google-vault-enterprise-hvd/tree/main/docs/kms.md) docs for helper material on producing the required KMS inputs.
 
 <!-- BEGIN_TF_DOCS -->
+## Module support
+
+This open source software is maintained by the HashiCorp Technical Field Organization, independently of our enterprise products. While our Support Engineering team provides dedicated support for our enterprise offerings, this open source software is not included.
+
+- For help using this open source software, please engage your account team.
+- To report bugs/issues with this open source software, please open them directly against this code repository using the GitHub issues feature.
+
+Please note that there is no official Service Level Agreement (SLA) for support of this software as a HashiCorp customer. This software falls under the definition of Community Software/Versions in your Agreement. We appreciate your understanding and collaboration in improving our open source projects.
+
 ## Requirements
 
 | Name | Version |
@@ -100,6 +105,7 @@ See [KMS](./docs/kms.md) docs for helper material on producing the required KMS 
 | [google_compute_region_instance_group_manager.vault](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/compute_region_instance_group_manager) | resource |
 | [google_dns_record_set.vault](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/dns_record_set) | resource |
 | [google_kms_crypto_key_iam_member.vault_key](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/kms_crypto_key_iam_member) | resource |
+| [google_kms_key_ring_iam_binding.vault_iam_kms_binding](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/kms_key_ring_iam_binding) | resource |
 | [google_project_iam_custom_role.vault_custom_role](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/project_iam_custom_role) | resource |
 | [google_project_iam_custom_role.vault_kms_custom_role](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/project_iam_custom_role) | resource |
 | [google_project_iam_member.vault_custom_role](https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/project_iam_member) | resource |
@@ -146,6 +152,7 @@ See [KMS](./docs/kms.md) docs for helper material on producing the required KMS 
 | <a name="input_gcp_kms_key_ring"></a> [gcp\_kms\_key\_ring](#input\_gcp\_kms\_key\_ring) | (optional) The name of the KMS key ring if it exists | `string` | `null` | no |
 | <a name="input_gcp_kms_project"></a> [gcp\_kms\_project](#input\_gcp\_kms\_project) | (optional) The project the KMS key ring is in. Can be left blank if project is the same as provider | `string` | `null` | no |
 | <a name="input_gcp_kms_region"></a> [gcp\_kms\_region](#input\_gcp\_kms\_region) | (optional) The region the KMS key ring is in. Can be left blank if region is the same as main region | `string` | `null` | no |
+| <a name="input_google_service_account_iam_roles"></a> [google\_service\_account\_iam\_roles](#input\_google\_service\_account\_iam\_roles) | (optional) List of IAM roles to give to the Vault service account | `list(string)` | <pre>[<br/>  "roles/compute.viewer",<br/>  "roles/secretmanager.secretAccessor",<br/>  "roles/cloudkms.cryptoKeyEncrypterDecrypter"<br/>]</pre> | no |
 | <a name="input_google_service_account_iam_roles"></a> [google\_service\_account\_iam\_roles](#input\_google\_service\_account\_iam\_roles) | (optional) List of IAM roles to give to the Vault service account | `list(string)` | <pre>[<br/>  "roles/secretmanager.secretAccessor",<br/>  "roles/logging.logWriter",<br/>  "roles/monitoring.metricWriter"<br/>]</pre> | no |
 | <a name="input_health_check_interval"></a> [health\_check\_interval](#input\_health\_check\_interval) | (optional) How often, in seconds, to send a health check | `number` | `30` | no |
 | <a name="input_health_timeout"></a> [health\_timeout](#input\_health\_timeout) | (optional) How long, in seconds, to wait before claiming failure | `number` | `15` | no |
@@ -174,9 +181,10 @@ See [KMS](./docs/kms.md) docs for helper material on producing the required KMS 
 | <a name="input_vault_dir_logs"></a> [vault\_dir\_logs](#input\_vault\_dir\_logs) | Path to hold Vault file audit device logs | `string` | `"/var/log/vault"` | no |
 | <a name="input_vault_disable_mlock"></a> [vault\_disable\_mlock](#input\_vault\_disable\_mlock) | (optional) Disable the server from executing the `mlock` syscall | `bool` | `true` | no |
 | <a name="input_vault_enable_ui"></a> [vault\_enable\_ui](#input\_vault\_enable\_ui) | (optional) Enable the Vault UI | `bool` | `true` | no |
+| <a name="input_vault_fqdn"></a> [vault\_fqdn](#input\_vault\_fqdn) | Fully qualified domain name to use for joining peer nodes and optionally DNS | `string` | n/a | yes |
 | <a name="input_vault_group_name"></a> [vault\_group\_name](#input\_vault\_group\_name) | Name of group to own Vault files and processes | `string` | `"vault"` | no |
 | <a name="input_vault_health_endpoints"></a> [vault\_health\_endpoints](#input\_vault\_health\_endpoints) | (optional) The status codes to return when querying Vault's sys/health endpoint | `map(string)` | <pre>{<br/>  "activecode": "200",<br/>  "drsecondarycode": "472",<br/>  "performancestandbycode": "473",<br/>  "perfstandbyok": "true",<br/>  "sealedcode": "503",<br/>  "standbycode": "429",<br/>  "standbyok": "true",<br/>  "uninitcode": "200"<br/>}</pre> | no |
-| <a name="input_vault_kms_custom_role"></a> [vault\_kms\_custom\_role](#input\_vault\_kms\_custom\_role) | (optional) List of permissions for the Vault KMS custom role | `list(string)` | <pre>[<br/>  "cloudkms.cryptoKeys.get",<br/>  "cloudkms.cryptoKeyVersions.useToDecrypt",<br/>  "cloudkms.cryptoKeyVersions.useToEncrypt"<br/>]</pre> | no |
+| <a name="input_vault_license_sm_secret_name"></a> [vault\_license\_sm\_secret\_name](#input\_vault\_license\_sm\_secret\_name) | Name of Secret Manager secret containing Vault license. | `string` | n/a | yes |
 | <a name="input_vault_max_lease_ttl_duration"></a> [vault\_max\_lease\_ttl\_duration](#input\_vault\_max\_lease\_ttl\_duration) | The max lease TTL expressed as a time duration in hours, minutes and/or seconds (e.g. `4h30m10s`) | `string` | `"768h"` | no |
 | <a name="input_vault_plugin_urls"></a> [vault\_plugin\_urls](#input\_vault\_plugin\_urls) | (optional list) List of Vault plugin fully qualified URLs (example ["https://releases.hashicorp.com/terraform-provider-oraclepaas/1.5.3/terraform-provider-oraclepaas_1.5.3_linux_amd64.zip"] for deployment to Vault plugins directory) | `list(string)` | `[]` | no |
 | <a name="input_vault_port_api"></a> [vault\_port\_api](#input\_vault\_port\_api) | TCP port for Vault API listener | `number` | `8200` | no |
@@ -195,6 +203,7 @@ See [KMS](./docs/kms.md) docs for helper material on producing the required KMS 
 | Name | Description |
 |------|-------------|
 | <a name="output_loadbalancer_ip"></a> [loadbalancer\_ip](#output\_loadbalancer\_ip) | The external ip address of the forwarding rule. |
+| <a name="output_user_data_template"></a> [user\_data\_template](#output\_user\_data\_template) | n/a |
 | <a name="output_vault_cli_config"></a> [vault\_cli\_config](#output\_vault\_cli\_config) | Environment variables to configure the Vault CLI |
 | <a name="output_zones"></a> [zones](#output\_zones) | n/a |
 <!-- END_TF_DOCS -->

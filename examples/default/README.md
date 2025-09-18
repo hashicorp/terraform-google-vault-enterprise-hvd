@@ -1,7 +1,7 @@
 # Example `HVD Default with KMS`
 
 Example deployment using the `terraform-google-vault-enterprise` module.
-Review the main [README](../../README.md) for general usage and prerequisites.
+Review the main [README](https://github.com/hashicorp/terraform-google-vault-enterprise-hvd/blob/0.2.0/README.md) for general usage and prerequisites.
 
 ## usage
 

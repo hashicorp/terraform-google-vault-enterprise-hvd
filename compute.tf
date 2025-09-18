@@ -21,8 +21,9 @@ locals {
     vault_tls_ca_bundle_sm_secret_name = var.vault_tls_ca_bundle_sm_secret_name == null ? "NONE" : var.vault_tls_ca_bundle_sm_secret_name,
 
     #Vault settings
-    vault_fqdn                               = var.vault_fqdn == null ? "" : var.vault_fqdn,
-    vault_install_url                        = format("https://releases.hashicorp.com/vault/%s/vault_%s_linux_amd64.zip", var.vault_version, var.vault_version),
+    vault_fqdn    = var.vault_fqdn == null ? "" : var.vault_fqdn,
+    vault_version = var.vault_version,
+    #vault_install_url                        = format("https://releases.hashicorp.com/vault/%s/vault_%s_linux_amd64.zip", var.vault_version, var.vault_version),
     vault_disable_mlock                      = var.vault_disable_mlock,
     vault_enable_ui                          = var.vault_enable_ui,
     vault_default_lease_ttl_duration         = var.vault_default_lease_ttl_duration,
@@ -37,6 +38,7 @@ locals {
     vault_plugin_urls                        = var.vault_plugin_urls
     auto_join_tag_value                      = var.auto_join_tag == null ? var.tags[0] : var.auto_join_tag[0]
     auto_join_zone_pattern                   = "${var.region}-[[:alpha:]]{1}"
+    vault_raft_performance_multiplier        = var.vault_raft_performance_multiplier
   }
 }
 
